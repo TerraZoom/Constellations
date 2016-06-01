@@ -1,0 +1,166 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<title>Constellation Finder</title>
+<link href="assets/css/bootstrap.css" rel="stylesheet">
+<link href="assets/css/styles.css" rel="stylesheet" />
+<meta charset="utf-8"/>
+<script type="text/javascript" src="https://code.jquery.com/jquery-1.12.3.min.js"></script>
+
+  <script type="text/javascript">
+  
+  function DecDecl(deg,min,sec) {
+	// for Declination
+	// Converts DMS ( Degrees / minutes / seconds ) 
+	// to decimal format longitude / latitude
+		if(deg < 0) {
+			return deg - (((min*60)+(sec))/3600);
+		} else {
+			return deg + (((min*60)+(sec))/3600);
+		}
+		return 
+	}    
+
+	function DecRA(hour,min,sec) {
+		// for Right Ascension	
+		raValue = hour + (((min*60)+(sec))/3600);
+		return raValue;
+	}
+	
+	function constellationSearch(path, method, params) {
+		console.log("getting the constellation");
+
+
+		method = method || "post";
+		var form = document.createElement('form');
+			form.setAttribute("method", method);
+			form.setAttribute("action", path);
+			
+			form._submit_function_ = form.submit;
+			
+			  for(var key in params) {
+					if(params.hasOwnProperty(key)) {
+						var hiddenField = document.createElement("input");
+						hiddenField.setAttribute("type", "hidden");
+						hiddenField.setAttribute("name", key);
+						hiddenField.setAttribute("value", params[key]);
+			 
+						form.appendChild(hiddenField);
+					 }
+				}
+			 
+				document.body.appendChild(form);
+				form._submit_function_();
+			}
+  
+    function astroSearch() {
+		var astroObj= document.getElementById("myObj").value;
+		var astroBeginStr = "https://api.import.io/store/connector/a0aae240-bc08-41c6-b362-6a886d0c9ab3/_query?input=webpage/url:http%3A%2F%2Fsimbad.u-strasbg.fr%2Fsimbad%2Fsim-basic%3FIdent%3D";
+		var astroEndStr = "%26submit%3DSIMBAD%2Bsearch&&_apikey=df3d360c4e4847af8454ee44b6e1b3d7570078cee6b28b8f95f0122dbec0533c01fe2dcfe783f1708d344418fa84328f8ce548519f4f08e7060d57ca015f211a7c71b337abc1f6708c72913f16ce08f0";
+		// alert(astroBeginStr + astroObj + astroEndStr);
+		var astroSearchStr = astroBeginStr + astroObj + astroEndStr;
+		// location.href = astroBeginStr + astroObj + astroEndStr;
+		var queryAPI = astroSearchStr;
+		$.getJSON(queryAPI, function(json) {
+
+			//set vars from results array
+			var name = json.results[0].name;
+			var coordinates = json.results[0].coordinates;
+			var name2 = json.results[0].coordinates;
+			var type = json.results[0].type;
+			
+			// output to console
+			console.log('Name: ', name);
+			console.log('coords: ', coordinates);
+			console.log('name2: ', name2);
+			console.log('type: ', type);
+
+			//need to parse the results to get what we want
+			var nameParsed1 = name.split(" ")[1];
+			var nameParsed2 = name.split(" ")[2];
+			var newName = nameParsed1 + " " + nameParsed2;
+			var typeParsed = type.split(" -- ")[1];
+			
+			var coordRAHour = parseInt(coordinates.split(" ")[0]);
+			var coordRAMin = parseInt(coordinates.split(" ")[1]);
+			var coordRASec = parseInt(coordinates.split(" ")[2]);
+			var coordRA = coordRAHour + " " + coordRAMin + " " + coordRASec;
+			var coordDeclDeg = parseInt(coordinates.split(" ")[3]);
+			var coordDeclMin = parseInt(coordinates.split(" ")[4]);
+			var coordDeclSec = parseInt(coordinates.split(" ")[5]);
+			var coordDecl = coordDeclDeg + " " + coordDeclMin + " " + coordDeclSec;
+			
+			var decRA = DecRA(coordRAHour, coordRAMin, coordRASec);
+			var decDecl = DecDecl(coordDeclDeg, coordDeclMin, coordDeclSec);
+			
+			console.log('RAHour: ', coordRAHour);
+			console.log('RAMin: ', coordRAMin);
+			console.log('RASec: ', coordRASec);
+			console.log('decRA: ', decRA);
+			console.log('decDecl: ', decDecl);
+
+			//and send it off to get the constellation location
+			constellationSearch('constellation.php', 'POST', {'ra_hours':coordRAHour, 'ra_minutes':coordRAMin, 'ra_seconds':coordRASec, 'dec_degrees': coordDeclDeg, 'dec_minutes': coordDeclMin, 'dec_seconds': coordDeclSec});
+		
+				
+			// set the vars
+			// $('#ra').text(coordRA).append(" ["+decRA+"]");
+			// $('#decl').text(coordDecl).append(" ["+decDecl+"]");
+			// $('#type').text(typeParsed); // (type);
+			// $('#constellation').text(constellation);
+		});
+    }
+	
+	
+  </script>
+
+</head>
+
+<body style="background: #fff url(assets/_images/bg.jpg); no-repeat center center; ">
+
+<div id="wrapper">
+<div id="header">
+	<h1 style="color: #fff; font-size: 50px; letter-spacing: -3px;">Constellation Finder</h1>
+</div>
+	<div id="formbox">
+		<form action="constellation.php" method="post">
+		  <table width="100%" border="0" cellpadding="5" cellspacing="5">
+			<tr>
+			  <td colspan="5"><h1>Enter object coordinates <span class=""></span></h1></td>
+			</tr>
+			<tr>
+				<td colspan="5"><p>Enter the stellar coordinates for any astronomical object, press enter and information about the constellation will be given.</p></td>
+			</tr>
+			<tr>
+			  <td>RA</td>
+			  <td><input name="ra_hours" type="text" class="" id="ra_hours" tabindex=1 onfocus="if (this.value == 'Hours') {this.value = '';}" onblur="if (this.value == '') "  placeholder="Hours" size="20" /></td>
+			  <td><input id="ra_minutes" class="" name="ra_minutes" type="text" tabindex=2 placeholder="Minutes" onfocus="if (this.value == 'Minutes') {this.value = '';}" onblur="if (this.value == '') " /></td>
+			  <td><input id="ra_seconds" class="" name="ra_seconds" type="text" tabindex=3 placeholder="Seconds" onfocus="if (this.value == 'Seconds') {this.value = '';}" onblur="if (this.value == '') " /></td>
+			  <td rowspan="2"><input type="submit"  name="find" id="findButton" value="Find Constellation" /></td>
+			</tr>
+			<tr>
+			  <td>DEC</td>
+			  <td><input id="dec_degrees" class="" name="dec_degrees" type="text" tabindex=4 placeholder="Degrees" onfocus="if (this.value == 'Degrees') {this.value = '';}" onblur="if (this.value == '') " /></td>
+			  <td><input id="dec_minutes" class="" name="dec_minutes" type="text" tabindex=5 placeholder="Minutes" onfocus="if (this.value == 'Minutes') {this.value = '';}" onblur="if (this.value == '') " /></td>
+			  <td><input id="dec_seconds" class="" name="dec_seconds" type="text" tabindex=6 placeholder="Seconds" onfocus="if (this.value == 'Seconds') {this.value = '';}" onblur="if (this.value == '') " /></td>
+			</tr>
+			<tr>
+			  
+			</tr>
+		  </table>
+		</form>
+
+	</div>
+	<div id="formbox">
+	<h1>Which object are you looking for?</h1>
+    <p>Enter the name of an astronomical object, press enter and information about the constellation will be given.</p>
+     <input type="text" id="myObj" placeholder="search here">
+	<button id="findButton" onclick="astroSearch()">Find Constellation</button>
+	<p class="info">This search gathers the Right Ascension and Declination from the <a href="http://simbad.u-strasbg.fr/simbad/" target="_blank">SIMBAD Astronomical Database</a></p>
+
+	</div>	
+</div>
+
+</body>
+</html>

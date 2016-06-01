@@ -1,0 +1,29 @@
+<div id="formbox">
+    <form action="constellation.php" method="post">
+      <table width="100%" border="0" cellpadding="5" cellspacing="5">
+        <tr>
+          <td colspan="5"><h1>Enter object coordinates <span class="icon-question-sign"></span></h1></td>
+        </tr>
+		<tr>
+			<td colspan="5"><p>Enter the stellar coordinates for any astronomical object, press enter and information about the constellation will be given.</p></td>
+		</tr>
+        <tr>
+          <td>RA</td>
+          <td><input name="ra_hours" type="text" class="" id="ra_hours" tabindex=1 onfocus="if (this.value == 'Hours') {this.value = '';}" onblur="if (this.value == '') "  value="Hours" size="20" /></td>
+          <td><input id="ra_minutes" class="" name="ra_minutes" type="text" tabindex=2 value="Minutes" onfocus="if (this.value == 'Minutes') {this.value = '';}" onblur="if (this.value == '') " /></td>
+          <td><input id="ra_seconds" class="" name="ra_seconds" type="text" tabindex=3 value="Seconds" onfocus="if (this.value == 'Seconds') {this.value = '';}" onblur="if (this.value == '') " /></td>
+          <td rowspan="2"><input type="submit"  name="find" id="findButton" value="Find Constellation" /></td>
+        </tr>
+        <tr>
+          <td>DEC</td>
+          <td><input id="dec_degrees" class="" name="dec_degrees" type="text" tabindex=4 value="Degrees" onfocus="if (this.value == 'Degrees') {this.value = '';}" onblur="if (this.value == '') " /></td>
+          <td><input id="dec_minutes" class="" name="dec_minutes" type="text" tabindex=5 value="Minutes" onfocus="if (this.value == 'Minutes') {this.value = '';}" onblur="if (this.value == '') " /></td>
+          <td><input id="dec_seconds" class="" name="dec_seconds" type="text" tabindex=6 value="Seconds" onfocus="if (this.value == 'Seconds') {this.value = '';}" onblur="if (this.value == '') " /></td>
+        </tr>
+        <tr>
+          
+        </tr>
+      </table>
+    </form>
+
+</div>
